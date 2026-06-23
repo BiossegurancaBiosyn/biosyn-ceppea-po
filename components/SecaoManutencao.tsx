@@ -2,7 +2,6 @@
 import { useState } from 'react'
 import { useCaderno } from '@/lib/caderno'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts'
-import InfoModal, { type InfoRow } from './InfoModal'
 
 const brl = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
@@ -13,18 +12,8 @@ const paradaData = [
   { eq: 'Mist. Y', horas: 4, fill: '#5b9bd5' },
 ]
 
-const MANUT_MODALS: Record<string, { title: string; icon: string; accent: string; sub?: string; rows: InfoRow[]; note?: string }> = {
-  'Custo preventiva/mês': { title:'Custo da Preventiva', icon:'🔧', accent:'#173a7a', sub:'2 pessoas × 8h', rows:[{label:'Custo/mês', value:'R$ 359,81', highlight:true},{label:'Hora-homem', value:'R$ 22,49/h'},{label:'Horas', value:'2 × 8h = 16h'}] },
-  'Perfil da equipe': { title:'Perfil da Equipe', icon:'👷', accent:'#2f6fc0', rows:[{label:'Faixa', value:'Operador Pleno', highlight:true},{label:'Quantidade', value:'2 pessoas'},{label:'Custo faixa', value:'R$ 4.700 total'}] },
-  'Hora-homem manutenção': { title:'Hora-Homem', icon:'⏱', accent:'#2f6fc0', rows:[{label:'Valor/hora', value:'R$ 22,49', highlight:true},{label:'Base', value:'Op. Pleno R$ 4.700'}] },
-  'Parada/mês': { title:'Parada Mensal', icon:'⏸', accent:'#dc2626', sub:'Preventiva dos misturadores', rows:[{label:'Duração', value:'8h (1 dia)', highlight:true},{label:'Frequência', value:'1×/mês'}], note:'Setor fica improdutivo durante a preventiva.' },
-  'Cx não produzidas': { title:'Impacto da Parada', icon:'📦', accent:'#dc2626', rows:[{label:'Caixas perdidas', value:'~280 cx', highlight:true},{label:'Equivale a', value:'1 dia de produção'}], note:'Avaliar manutenção fora do horário produtivo.' },
-  'Frequência': { title:'Frequência', icon:'🔁', accent:'#16a34a', rows:[{label:'Periodicidade', value:'1×/mês', highlight:true},{label:'Calibração balanças', value:'Terceirizada'},{label:'Peças/histórico', value:'a informar', warn:true}] },
-}
-
 export default function SecaoManutencao() {
-  const { data, can, setManutMes } = useCaderno()
-  const [sel, setSel] = useState<string | null>(null)
+  const { data, can, setManutMes, verCustos } = useCaderno()
   const [editando, setEditando] = useState(false)
   const [val, setVal] = useState(data.manutMes)
   return (
@@ -32,7 +21,7 @@ export default function SecaoManutencao() {
       <div className="flex items-start justify-between gap-3 flex-wrap mb-4">
         <div>
           <h2 className="section-title">Manutenção</h2>
-          <p className="section-sub">Preventivas, paradas e impacto · clique nos cards</p>
+          <p className="section-sub">Preventivas, paradas e impacto no setor</p>
         </div>
         {can('manutencao') && (
           <button onClick={() => { setVal(data.manutMes); setEditando(true) }} className="no-print" style={{ padding: '7px 13px', borderRadius: 10, background: '#173a7a', color: '#fff', border: 'none', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>✏️ Editar custo manutenção</button>
@@ -41,15 +30,14 @@ export default function SecaoManutencao() {
 
       <div className="grid gap-4 mb-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}>
         {[
-          { l: 'Custo preventiva/mês', v: brl(data.manutMes), cor: '#173a7a' },
+          { l: 'Custo preventiva/mês', v: verCustos ? brl(data.manutMes) : '🔒', cor: '#173a7a' },
           { l: 'Perfil da equipe', v: 'Op. Pleno', cor: '#2f6fc0' },
-          { l: 'Hora-homem manutenção', v: 'R$ 22,49/h', cor: '#2f6fc0' },
+          { l: 'Hora-homem manutenção', v: verCustos ? 'R$ 22,49/h' : '🔒', cor: '#2f6fc0' },
           { l: 'Parada/mês', v: '8h (1 dia)', cor: '#dc2626' },
           { l: 'Cx não produzidas', v: '~280 cx', cor: '#dc2626' },
           { l: 'Frequência', v: '1×/mês', cor: '#16a34a' },
         ].map(k => (
-          <div key={k.l} className="card clickable" onClick={() => setSel(k.l)}>
-            <span className="tap-hint">›</span>
+          <div key={k.l} className="card">
             <div className="label-xs">{k.l}</div>
             <div className="font-head" style={{ fontSize: 19, fontWeight: 800, color: k.cor, marginTop: 4, letterSpacing: '-.02em' }}>{k.v}</div>
           </div>
@@ -105,8 +93,6 @@ export default function SecaoManutencao() {
           Recomendação: avaliar manutenção em turno extra ou fora do horário produtivo para minimizar impacto.
         </div>
       </div>
-
-      {sel && MANUT_MODALS[sel] && <InfoModal {...MANUT_MODALS[sel]} onClose={() => setSel(null)} />}
 
       {editando && (
         <div className="modal-overlay" onClick={e => { if (e.target === e.currentTarget) setEditando(false) }}>

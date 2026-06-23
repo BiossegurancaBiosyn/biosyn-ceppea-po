@@ -4,10 +4,8 @@ import { PARAMS, PRODUTOS } from '@/data/ceppea-po'
 import { useCaderno } from '@/lib/caderno'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, ReferenceLine } from 'recharts'
 import Modal from './Modal'
-import InfoModal, { type InfoRow } from './InfoModal'
 
 const TOOLTIP_STYLE = { borderRadius: 12, border: 'none', boxShadow: '0 4px 16px rgba(0,0,0,.1)', fontSize: 12, fontFamily: 'var(--font-inter)' }
-interface ModalDef { title: string; sub?: string; icon: string; accent: string; rows: InfoRow[]; note?: string }
 
 export default function SecaoProducao({ metaSOP }: { metaSOP: boolean }) {
   const { data, can, setProducao } = useCaderno()
@@ -16,7 +14,6 @@ export default function SecaoProducao({ metaSOP }: { metaSOP: boolean }) {
   const [lotesDia, setLotesDia] = useState(7)
   const [cxLote, setCxLote] = useState(40)
   const [dias, setDias] = useState(prod.diasUteis)
-  const [modal, setModal] = useState<ModalDef | null>(null)
   const [editando, setEditando] = useState(false)
   const [form, setForm] = useState(prod)
 
@@ -66,21 +63,14 @@ export default function SecaoProducao({ metaSOP }: { metaSOP: boolean }) {
       {/* KPI cards */}
       <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))' }}>
         {[
-          { icon: '📦', label: 'Capacidade/dia', value: `${prod.capacidadeDia} cx`, cor: '#173a7a', bg: '#dbeafe',
-            m: { title:'Capacidade Diária', icon:'📦', accent:'#173a7a', rows:[{label:'Capacidade/dia', value:`${prod.capacidadeDia} cx`, highlight:true},{label:'Realizado (mês ant.)', value:`${Math.round(prod.mesAnteriorRealizado/prod.diasUteis)} cx/dia`}] } as ModalDef },
-          { icon: '📊', label: 'Capacidade/mês', value: `${capacidadeMes.toLocaleString('pt-BR')} cx`, cor: '#173a7a', bg: '#dbeafe',
-            m: { title:'Capacidade Mensal', icon:'📊', accent:'#173a7a', rows:[{label:'Capacidade/mês', value:`${capacidadeMes.toLocaleString('pt-BR')} cx`, highlight:true},{label:'Dias úteis', value:`${prod.diasUteis}`}] } as ModalDef },
-          { icon: '🎯', label: 'Meta S&OP', value: `${prod.metaSOP.toLocaleString('pt-BR')} cx`, cor: '#15803d', bg: '#dcfce7',
-            m: { title:'Meta S&OP do Mês', icon:'🎯', accent:'#15803d', rows:[{label:'Meta', value:`${prod.metaSOP.toLocaleString('pt-BR')} cx`, highlight:true},{label:'Desejado mês anterior', value:`${prod.mesAnteriorDesejado.toLocaleString('pt-BR')} cx`},{label:'Realizado mês anterior', value:`${prod.mesAnteriorRealizado.toLocaleString('pt-BR')} cx`}] } as ModalDef },
-          { icon: '🏭', label: 'Lotes/mês', value: `${PARAMS.LOTES_MES}`, cor: '#2f6fc0', bg: '#e0f2fe',
-            m: { title:'Lotes Mensais', icon:'🏭', accent:'#2f6fc0', rows:[{label:'Lotes/mês', value:`${PARAMS.LOTES_MES}`, highlight:true},{label:'Lotes/dia', value:'7'}] } as ModalDef },
-          { icon: '📅', label: 'Dias úteis', value: `${prod.diasUteis}`, cor: '#7c3aed', bg: '#ede9fe',
-            m: { title:'Dias Úteis', icon:'📅', accent:'#7c3aed', rows:[{label:'Dias úteis/mês', value:`${prod.diasUteis}`, highlight:true}], note:'Ajustável no editar dados do mês.' } as ModalDef },
-          { icon: '⏱', label: 'Horas/mês', value: `${PARAMS.HORAS}h`, cor: '#64748b', bg: '#f1f5f9',
-            m: { title:'Horas Trabalhadas', icon:'⏱', accent:'#64748b', rows:[{label:'Horas/mês', value:'209 h', highlight:true},{label:'CLT', value:'220 h'},{label:'Café (30 min/dia)', value:'−11 h'}] } as ModalDef },
+          { icon: '📦', label: 'Capacidade/dia', value: `${prod.capacidadeDia} cx`, cor: '#173a7a', bg: '#dbeafe' },
+          { icon: '📊', label: 'Capacidade/mês', value: `${capacidadeMes.toLocaleString('pt-BR')} cx`, cor: '#173a7a', bg: '#dbeafe' },
+          { icon: '🎯', label: 'Meta S&OP', value: `${prod.metaSOP.toLocaleString('pt-BR')} cx`, cor: '#15803d', bg: '#dcfce7' },
+          { icon: '🏭', label: 'Lotes/mês', value: `${PARAMS.LOTES_MES}`, cor: '#2f6fc0', bg: '#e0f2fe' },
+          { icon: '📅', label: 'Dias úteis', value: `${prod.diasUteis}`, cor: '#7c3aed', bg: '#ede9fe' },
+          { icon: '⏱', label: 'Horas/mês', value: `${PARAMS.HORAS}h`, cor: '#64748b', bg: '#f1f5f9' },
         ].map(k => (
-          <div key={k.label} className="card clickable" style={{ padding: '16px' }} onClick={() => setModal(k.m)}>
-            <span className="tap-hint">›</span>
+          <div key={k.label} className="card" style={{ padding: '16px' }}>
             <div className="icon-box icon-box-sm" style={{ background: k.bg, fontSize: 16, marginBottom: 10 }}>{k.icon}</div>
             <div className="font-head" style={{ fontSize: 21, fontWeight: 800, color: k.cor, letterSpacing: '-.025em' }}>{k.value}</div>
             <div className="label-xs" style={{ marginTop: 3 }}>{k.label}</div>
@@ -179,7 +169,6 @@ export default function SecaoProducao({ metaSOP }: { metaSOP: boolean }) {
         </div>
       </div>
 
-      {modal && <InfoModal {...modal} onClose={() => setModal(null)} />}
 
       {/* Editar dados do mês */}
       {editando && (

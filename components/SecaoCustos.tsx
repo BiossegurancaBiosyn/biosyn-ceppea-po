@@ -9,13 +9,26 @@ const brl = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', curren
 interface ModalDef { title: string; sub?: string; icon: string; accent: string; rows: InfoRow[]; note?: string }
 
 export default function SecaoCustos({ metaSOP }: { metaSOP: boolean }) {
-  const { data, custos, rhBase, rhComBonus } = useCaderno()
+  const { data, custos, rhBase, rhComBonus, verCustos } = useCaderno()
   const { rh, total, porCx, porLote } = custos(metaSOP)
   const EQUIPE = data.equipe
   const RH_BASE = rhBase
   const USE_MES = data.useMes
   const MANUT_MES = data.manutMes
   const [modal, setModal] = useState<ModalDef | null>(null)
+
+  if (!verCustos) {
+    return (
+      <div className="card" style={{ textAlign: 'center', padding: '56px 24px', maxWidth: 460, margin: '40px auto' }}>
+        <div style={{ fontSize: 40 }}>🔒</div>
+        <div className="font-head" style={{ fontSize: 18, fontWeight: 800, color: '#173a7a', marginTop: 10 }}>Dados restritos à Gestão</div>
+        <p style={{ fontSize: 13, color: '#64748b', lineHeight: 1.7, marginTop: 8 }}>
+          Os custos (R$) do setor são visíveis apenas para coordenação, comitê e diretoria.
+          Use o botão <strong>🔒 Custos</strong> no topo para ativar a Visão Gestão com o código de acesso.
+        </p>
+      </div>
+    )
+  }
 
   const pieData = [
     { name: 'RH', value: rh, fill: '#173a7a' },

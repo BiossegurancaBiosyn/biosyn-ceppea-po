@@ -321,3 +321,14 @@ export const DEFAULT_CREDITOS: Creditos = {
   aprovadoPor: 'Matheus Peixoto — Líder de Biossegurança',
   mesRef: 'Maio 2026',
 }
+
+// ─── Impacto produtivo por colaborador (visível à fábrica, sem custos) ─────
+export const IMPACTO: Record<string, { produz: string; papel: string; detalhe: string }> = {
+  WP: { produz: '≈ 320 cx/dia', papel: 'Misturadores 1 e 2 (8 lotes/dia)', detalhe: 'Referência operacional da linha. Conduz os dois misturadores principais; maior volume individual de envase do setor.' },
+  LM: { produz: '≈ 120 cx/dia', papel: 'Misturador 3 (3 lotes/dia) + envasadora', detalhe: 'Opera o Misturador 3 e a envasadora de pós; apoia o ritmo de envase.' },
+  JR: { produz: 'Variável (Personalize)', papel: 'Misturador Y / Big Bag', detalhe: 'Linha Personalize e Big Bag — envase e pesagem sob demanda.' },
+  JC: { produz: '≈ 160 cx/dia', papel: 'Embalagem (3–5 lotes/dia)', detalhe: 'Rotulagem, selagem, filme stretch e elevador — fecha o fluxo do produto acabado.' },
+  GP: { produz: 'Não produz direto', papel: 'Qualidade flutuante', detalhe: 'Garante conformidade (etiquetas, lote, peso, umidade, balanças). Entra na linha só quando necessário.' },
+  RS: { produz: '—', papel: 'Coordenação geral', detalhe: 'Coordena toda a indústria; não atua no processo do setor.' },
+  LB: { produz: '—', papel: 'Liderança de produção', detalhe: 'Lidera Pó/Pasta/Sachê/Premix; ponte entre áreas. Não entra direto na linha.' },
+}

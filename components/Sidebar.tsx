@@ -1,5 +1,6 @@
 'use client'
-import type { SecaoId } from '@/app/page'
+import type { SecId as SecaoId } from '@/lib/caderno'
+import { useCaderno } from '@/lib/caderno'
 import LogoBioSyn from './LogoBioSyn'
 
 const NAV = [
@@ -38,6 +39,7 @@ interface Props {
 }
 
 export default function Sidebar({ ativa, onChange, aberta }: Props) {
+  const { verCustos } = useCaderno()
   return (
     <>
       <style>{`
@@ -106,7 +108,10 @@ export default function Sidebar({ ativa, onChange, aberta }: Props) {
                       {item.icon}
                     </span>
                     {item.label}
-                    {isAtivo && (
+                    {item.id === 'custos' && !verCustos && (
+                      <span style={{ marginLeft: 'auto', fontSize: 11, opacity: .7, flexShrink: 0 }}>🔒</span>
+                    )}
+                    {isAtivo && !(item.id === 'custos' && !verCustos) && (
                       <span style={{ marginLeft: 'auto', width: 6, height: 6, borderRadius: '50%', background: '#5b9bd5', flexShrink: 0 }} />
                     )}
                   </button>

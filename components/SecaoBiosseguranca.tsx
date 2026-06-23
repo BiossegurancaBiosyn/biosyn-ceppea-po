@@ -3,14 +3,11 @@ import { useState } from 'react'
 import { USE_MATERIAIS } from '@/data/ceppea-po'
 import { useCaderno } from '@/lib/caderno'
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts'
-import InfoModal, { type InfoRow } from './InfoModal'
 
 const brl = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-interface ModalDef { title: string; sub?: string; icon: string; accent: string; rows: InfoRow[]; note?: string }
 
 export default function SecaoBiosseguranca() {
-  const { data, can, setUseMes } = useCaderno()
-  const [modal, setModal] = useState<ModalDef | null>(null)
+  const { data, can, setUseMes, verCustos } = useCaderno()
   const [editando, setEditando] = useState(false)
   const [val, setVal] = useState(data.useMes)
   const pieData = [
@@ -28,24 +25,26 @@ export default function SecaoBiosseguranca() {
       </div>
       <div className="badge badge-purple mb-4">Nível de Biossegurança 2 (NB-2)</div>
 
-      <div className="grid gap-4 mb-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
-        {([
-          { l: 'Mão de obra/mês', v: 'R$ 210,53', cor: '#2f6fc0',
-            m: { title:'Mão de Obra USE', icon:'🧤', accent:'#2f6fc0', sub:'Operador Jr · R$ 19,14/h', rows:[{label:'Total/mês', value:'R$ 210,53', highlight:true},{label:'Liberação (15 min × 16)', value:'4h'},{label:'Limpeza úmida (3,5h × 2)', value:'7h'},{label:'Total horas', value:'11h'}] } },
-          { l: 'Materiais/mês', v: 'R$ 719,96', cor: '#5b9bd5',
-            m: { title:'Materiais USE', icon:'🧴', accent:'#5b9bd5', rows:[{label:'Total/mês', value:'R$ 719,96', highlight:true},{label:'Swab ATP', value:'R$ 224,85'},{label:'Álcool 70%', value:'R$ 173,34'},{label:'Perflex Azul', value:'R$ 144,75'}], note:'Ver tabela completa de materiais abaixo.' } },
-          { l: 'Total USE/mês', v: brl(data.useMes), cor: '#173a7a',
-            m: { title:'Total USE', icon:'🧪', accent:'#173a7a', sub:'Biossegurança NB-2', rows:[{label:'Total/mês', value:brl(data.useMes), highlight:true},{label:'Mão de obra', value:'R$ 210,53'},{label:'Materiais', value:'R$ 719,96'},{label:'Custo/caixa', value:'R$ 0,21'}] } },
-          { l: 'Custo/caixa', v: 'R$ 0,21', cor: '#16a34a',
-            m: { title:'Custo USE por Caixa', icon:'🪙', accent:'#16a34a', rows:[{label:'Custo/caixa', value:'R$ 0,21', highlight:true},{label:'Base', value:'4.480 cx/mês'}], note:'EPIs (máscara/luva) não entram neste centro de custo.' } },
-        ] as { l:string; v:string; cor:string; m:{title:string;icon:string;accent:string;sub?:string;rows:{label:string;value:string;highlight?:boolean;warn?:boolean}[];note?:string} }[]).map(k => (
-          <div key={k.l} className="card clickable" onClick={() => setModal(k.m)}>
-            <span className="tap-hint">›</span>
-            <div className="label-xs">{k.l}</div>
-            <div className="font-head" style={{ fontSize: 21, fontWeight: 800, color: k.cor, marginTop: 4, letterSpacing: '-.025em' }}>{k.v}</div>
-          </div>
-        ))}
-      </div>
+      {verCustos ? (
+        <div className="grid gap-4 mb-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
+          {[
+            { l: 'Mão de obra/mês', v: 'R$ 210,53', cor: '#2f6fc0' },
+            { l: 'Materiais/mês', v: 'R$ 719,96', cor: '#5b9bd5' },
+            { l: 'Total USE/mês', v: brl(data.useMes), cor: '#173a7a' },
+            { l: 'Custo/caixa', v: 'R$ 0,21', cor: '#16a34a' },
+          ].map(k => (
+            <div key={k.l} className="card">
+              <div className="label-xs">{k.l}</div>
+              <div className="font-head" style={{ fontSize: 21, fontWeight: 800, color: k.cor, marginTop: 4, letterSpacing: '-.025em' }}>{k.v}</div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="card mb-4" style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#f8fafc' }}>
+          <span style={{ fontSize: 18 }}>🔒</span>
+          <span style={{ fontSize: 12.5, color: '#64748b' }}>Custos da USE (R$) visíveis apenas na Visão Gestão. Materiais e checklist abaixo são abertos a todos.</span>
+        </div>
+      )}
 
       <div className="grid gap-4 mb-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
         {/* Tabela materiais */}
@@ -54,7 +53,7 @@ export default function SecaoBiosseguranca() {
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
             <thead>
               <tr style={{ background: '#eef2f7' }}>
-                {['Item','Qtd.','Unit.','Total'].map(h => (
+                {(verCustos ? ['Item','Qtd.','Unit.','Total'] : ['Item','Qtd.']).map(h => (
                   <th key={h} style={{ padding: '7px 10px', textAlign: 'left', fontSize: 10, fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>{h}</th>
                 ))}
               </tr>
@@ -64,14 +63,16 @@ export default function SecaoBiosseguranca() {
                 <tr key={i} style={{ background: i % 2 ? '#f8fafc' : '#fff', borderBottom: '1px solid #f1f5f9' }}>
                   <td style={{ padding: '7px 10px' }}>{m.item}</td>
                   <td style={{ padding: '7px 10px', color: '#64748b' }}>{m.qtd}</td>
-                  <td style={{ padding: '7px 10px', color: '#64748b' }}>{brl(m.unitario)}</td>
-                  <td style={{ padding: '7px 10px', fontWeight: 700, color: '#173a7a' }}>{brl(m.total)}</td>
+                  {verCustos && <td style={{ padding: '7px 10px', color: '#64748b' }}>{brl(m.unitario)}</td>}
+                  {verCustos && <td style={{ padding: '7px 10px', fontWeight: 700, color: '#173a7a' }}>{brl(m.total)}</td>}
                 </tr>
               ))}
-              <tr style={{ background: '#eef2f7', fontWeight: 700 }}>
-                <td colSpan={3} style={{ padding: '8px 10px' }}>Total materiais</td>
-                <td style={{ padding: '8px 10px', color: '#173a7a' }}>R$ 719,96</td>
-              </tr>
+              {verCustos && (
+                <tr style={{ background: '#eef2f7', fontWeight: 700 }}>
+                  <td colSpan={3} style={{ padding: '8px 10px' }}>Total materiais</td>
+                  <td style={{ padding: '8px 10px', color: '#173a7a' }}>R$ 719,96</td>
+                </tr>
+              )}
             </tbody>
           </table>
           <div style={{ fontSize: 10, color: '#64748b', marginTop: 8 }}>
@@ -81,6 +82,7 @@ export default function SecaoBiosseguranca() {
 
         {/* Gráfico + checklist */}
         <div className="flex flex-col gap-4">
+          {verCustos && (
           <div className="card">
             <div className="card-title mb-3">Composição de Custos USE</div>
             <ResponsiveContainer width="100%" height={160}>
@@ -93,6 +95,7 @@ export default function SecaoBiosseguranca() {
               </PieChart>
             </ResponsiveContainer>
           </div>
+          )}
 
           <div className="card">
             <div className="card-title mb-3">Checklist Diário USE</div>
@@ -129,8 +132,6 @@ export default function SecaoBiosseguranca() {
           ))}
         </div>
       </div>
-
-      {modal && <InfoModal {...modal} onClose={() => setModal(null)} />}
 
       {editando && (
         <ModalEdit titulo="Editar custo USE/mês" valor={val} onChange={setVal}
