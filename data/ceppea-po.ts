@@ -332,3 +332,88 @@ export const IMPACTO: Record<string, { produz: string; papel: string; detalhe: s
   RS: { produz: '—', papel: 'Coordenação geral', detalhe: 'Coordena toda a indústria; não atua no processo do setor.' },
   LB: { produz: '—', papel: 'Liderança de produção', detalhe: 'Lidera Pó/Pasta/Sachê/Premix; ponte entre áreas. Não entra direto na linha.' },
 }
+
+// ─── Mapeamento de Risco (padrão NR-5: cor = tipo, tamanho = grau) ─────────
+export type TipoRisco = 'Biológico' | 'Ergonômico' | 'Acidente' | 'Químico' | 'Físico'
+export type GrauRisco = 'Pequeno' | 'Médio' | 'Grande'
+
+export const RISCO_CORES: Record<TipoRisco, { cor: string; bg: string }> = {
+  'Biológico':  { cor: '#92400e', bg: '#fef3c7' }, // marrom
+  'Físico':     { cor: '#16a34a', bg: '#dcfce7' }, // verde
+  'Químico':    { cor: '#dc2626', bg: '#fee2e2' }, // vermelho
+  'Ergonômico': { cor: '#f59e0b', bg: '#fef9c3' }, // amarelo
+  'Acidente':   { cor: '#2563eb', bg: '#dbeafe' }, // azul
+}
+export const GRAU_RAIO: Record<GrauRisco, number> = { 'Pequeno': 10, 'Médio': 16, 'Grande': 23 }
+
+export interface Risco {
+  id: string
+  area: string
+  tipo: TipoRisco
+  grau: GrauRisco
+  agente: string
+  fonte: string
+  consequencia: string
+  medidas: string[]
+  x: number
+  y: number
+}
+
+export const RISCOS: Risco[] = [
+  {
+    id: 'RB1', area: 'Área de Misturadores', tipo: 'Biológico', grau: 'Grande',
+    agente: 'Microrganismos (Classe de Risco 1–2 · NB-2): Bacillus, Lactobacillus, E. faecium',
+    fonte: 'Mistura de pós em área aberta, sem contenção total entre lotes/produtos.',
+    consequencia: 'Contaminação cruzada entre produtos e potencial exposição do operador.',
+    medidas: ['Operação sob NB-2', 'Liberação USE (swab ATP) antes de cada lote', 'Limpeza úmida e segregação de utensílios', 'EPIs: máscara, luvas e uniforme', 'Não produzir produtos incompatíveis em paralelo'],
+    x: 774, y: 250,
+  },
+  {
+    id: 'RA1', area: 'Plataforma de Mistura (>4 m)', tipo: 'Acidente', grau: 'Grande',
+    agente: 'Trabalho em altura (plataforma elevada acima de 4 m)',
+    fonte: 'Abastecimento dos misturadores na plataforma superior.',
+    consequencia: 'Risco de queda de altura.',
+    medidas: ['Guarda-corpo / grades de proteção em todo o perímetro', 'Rodapé e escada com corrimão', 'Inspeção periódica das grades', 'Atenção ao transporte de sacarias na escada'],
+    x: 700, y: 120,
+  },
+  {
+    id: 'RF1', area: 'Área de Misturadores / Envase', tipo: 'Físico', grau: 'Médio',
+    agente: 'Pó em suspensão (poeira de insumos)',
+    fonte: 'Pesagem, mistura e envase de pós finos.',
+    consequencia: 'Exposição respiratória e irritação; risco de atmosfera com poeira.',
+    medidas: ['Máscara/respirador obrigatório', 'Exaustão / ventilação da área', 'Limpeza frequente para evitar acúmulo', 'Controle de umidade'],
+    x: 645, y: 320,
+  },
+  {
+    id: 'RE1', area: 'Seladora / Embalagem Final', tipo: 'Ergonômico', grau: 'Médio',
+    agente: 'Levantamento manual de peso (sacos de 20 e 25 kg)',
+    fonte: 'Levantar o pacote, selar e retornar ao palete na seladora.',
+    consequencia: 'Sobrecarga de coluna e lesões osteomusculares.',
+    medidas: ['Treinamento de levantamento correto', 'Mesa na altura adequada', 'Revezamento de tarefas', 'Avaliar auxílio mecânico para paletização'],
+    x: 192, y: 293,
+  },
+  {
+    id: 'RE2', area: 'Área de Paletização', tipo: 'Ergonômico', grau: 'Médio',
+    agente: 'Postura inadequada — abaixar repetidamente para paletizar (20–25 kg)',
+    fonte: 'Organização de materiais no palete a baixa altura.',
+    consequencia: 'Risco ergonômico por flexão repetida de tronco.',
+    medidas: ['Paletizar em altura intermediária quando possível', 'Treinamento postural', 'Pausas e revezamento'],
+    x: 300, y: 545,
+  },
+  {
+    id: 'RA2', area: 'Circulação / Logística', tipo: 'Acidente', grau: 'Médio',
+    agente: 'Movimentação de empilhadeira e transpaleteira',
+    fonte: 'Transporte de paletes e Big Bags no setor.',
+    consequencia: 'Colisão, atropelamento ou queda de carga.',
+    medidas: ['Demarcação de rotas (piso sinalizado)', 'Velocidade reduzida', 'Buzina em cruzamentos', 'Habilitação dos operadores'],
+    x: 470, y: 545,
+  },
+  {
+    id: 'RQ1', area: 'Armário de Utensílios de Limpeza', tipo: 'Químico', grau: 'Pequeno',
+    agente: 'Produtos de limpeza/desinfecção (álcool 70%, peróxido, hipoclorito)',
+    fonte: 'Armazenagem e uso de saneantes na higienização.',
+    consequencia: 'Irritação de pele/olhos e reações por mistura indevida.',
+    medidas: ['Armazenagem ventilada e identificada', 'FISPQ acessível', 'Não misturar produtos', 'EPIs ao manipular'],
+    x: 115, y: 60,
+  },
+]

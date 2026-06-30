@@ -13,6 +13,7 @@ const LABELS: Record<SecId, { title: string; sub: string }> = {
   'equipamentos':  { title: 'Equipamentos', sub: '17 ativos do setor' },
   'limpeza':       { title: 'Plano de Limpeza', sub: 'PLIM.01.00 · POP 02' },
   'biosseguranca': { title: 'Biossegurança (USE)', sub: 'Nível NB-2' },
+  'risco':         { title: 'Mapeamento de Risco', sub: 'Padrão NR-5 · NB-2' },
   'manutencao':    { title: 'Manutenção', sub: 'Preventivas e paradas' },
   'fluxograma':    { title: 'Fluxograma', sub: 'Linha Pó acima de 2 kg' },
 }

@@ -14,6 +14,7 @@ import SecaoCustos from '@/components/SecaoCustos'
 import SecaoEquipamentos from '@/components/SecaoEquipamentos'
 import SecaoLimpeza from '@/components/SecaoLimpeza'
 import SecaoBiosseguranca from '@/components/SecaoBiosseguranca'
+import SecaoRisco from '@/components/SecaoRisco'
 import SecaoManutencao from '@/components/SecaoManutencao'
 import SecaoFluxograma from '@/components/SecaoFluxograma'
 
@@ -29,6 +30,7 @@ const SECOES: { id: SecId; titulo: string }[] = [
   { id: 'equipamentos', titulo: 'Equipamentos' },
   { id: 'limpeza', titulo: 'Plano de Limpeza' },
   { id: 'biosseguranca', titulo: 'Biossegurança (USE)' },
+  { id: 'risco', titulo: 'Mapeamento de Risco' },
   { id: 'manutencao', titulo: 'Manutenção' },
   { id: 'fluxograma', titulo: 'Fluxograma' },
 ]
@@ -44,6 +46,7 @@ function renderSecao(id: SecId, metaSOP: boolean, expandAll: boolean) {
     case 'equipamentos':  return <SecaoEquipamentos />
     case 'limpeza':       return <SecaoLimpeza />
     case 'biosseguranca': return <SecaoBiosseguranca />
+    case 'risco':         return <SecaoRisco />
     case 'manutencao':    return <SecaoManutencao />
     case 'fluxograma':    return <SecaoFluxograma />
   }

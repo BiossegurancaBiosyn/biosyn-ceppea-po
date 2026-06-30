@@ -34,7 +34,7 @@ const GESTORES: Gestor[] = [
 
 export type SecId =
   | 'visao-geral' | 'mapa' | 'equipe' | 'cronograma' | 'producao' | 'custos'
-  | 'equipamentos' | 'limpeza' | 'biosseguranca' | 'manutencao' | 'fluxograma'
+  | 'equipamentos' | 'limpeza' | 'biosseguranca' | 'risco' | 'manutencao' | 'fluxograma'
 
 export interface CadernoData {
   producao: ProducaoMes

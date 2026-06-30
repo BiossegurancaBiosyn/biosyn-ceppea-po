@@ -26,6 +26,7 @@ const NAV = [
     itens: [
       { id: 'limpeza',       label: 'Plano de Limpeza',  icon: '◌' },
       { id: 'biosseguranca', label: 'Biossegurança',     icon: '⊗' },
+      { id: 'risco',         label: 'Mapa de Risco',     icon: '⚠' },
       { id: 'manutencao',    label: 'Manutenção',        icon: '◉' },
       { id: 'fluxograma',    label: 'Fluxograma',        icon: '⊳' },
     ],
